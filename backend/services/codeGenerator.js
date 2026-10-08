@@ -466,9 +466,9 @@ function renderPortfolio(plan, palette) {
             <span class="w-2 h-2 rounded-full ${palette.accentHex ? 'bg-[' + palette.accentHex + ']' : 'bg-[#FF00A8]'} animate-pulse"></span>
             AVAILABLE FOR HIRE & COLLABORATION
           </div>
-          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-white">
-            Hi, I'm <span class="${palette.accentText}">${name}</span>.<br>
-            <span class="text-3xl sm:text-5xl text-neutral-200">${role}</span>
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold heading-font leading-[1.08] tracking-[-0.035em] text-white">
+            Hi, I'm <span class="${palette.accentText} text-glow">${name}</span>.<br>
+            <span class="text-2xl sm:text-4xl text-neutral-300 font-bold block mt-2">${role}</span>
           </h1>
           <p class="text-base sm:text-lg ${palette.subText} max-w-xl leading-relaxed">
             Crafting performant, accessible, and human-centered digital experiences with modern web technologies, strict architectural patterns, and visual finesse.
@@ -846,8 +846,8 @@ function renderRestaurant(plan, palette) {
         <span class="w-2 h-2 rounded-full ${palette.accentHex ? 'bg-[' + palette.accentHex + ']' : 'bg-[#FF00A8]'} animate-pulse"></span>
         SEASONAL DEGUSTATION MENU NOW SERVING
       </div>
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
-        Artisanal Gastronomy at <span class="${palette.accentText}">${brand}</span>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold editorial-font tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
+        Artisanal Gastronomy at <span class="${palette.accentText} italic text-glow">${brand}</span>
       </h1>
       <p class="text-base sm:text-lg ${palette.subText} max-w-2xl mx-auto">
         Celebrating heritage culinary craft, wood-fired hearth cooking, and biodynamic terroir provisions in an intimate modern atmosphere.
@@ -1045,8 +1045,8 @@ function renderEcommerce(plan, palette) {
           <span class="text-xs font-mono font-bold tracking-widest uppercase ${palette.accentText} bg-[#101010] border border-[#222222] px-3.5 py-1.5 rounded-full">
             AUTUMN/WINTER CAPSULE
           </span>
-          <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
-            Curated Luxury at <span class="${palette.accentText}">${store}</span>
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold syne-font text-white leading-[1.08] tracking-[-0.03em]">
+            Curated Luxury at <span class="${palette.accentText} text-glow">${store}</span>
           </h1>
           <p class="text-base sm:text-lg ${palette.subText} max-w-xl">
             Precision tailoring, sustainable organic fibers, and minimalist silhouettes engineered for enduring daily wear.
@@ -1180,8 +1180,8 @@ function renderSaas(plan, palette) {
         <span class="w-2 h-2 rounded-full ${palette.accentHex ? 'bg-[' + palette.accentHex + ']' : 'bg-[#FF00A8]'} animate-pulse"></span>
         AUTOMATED CLOUD ENGINE 3.0
       </div>
-      <h1 class="text-4xl sm:text-6xl font-extrabold text-white max-w-4xl mx-auto leading-tight">
-        Scale Modern Workflows with <span class="${palette.accentText}">${product}</span>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold heading-font text-white max-w-4xl mx-auto leading-[1.08] tracking-[-0.035em]">
+        Scale Modern Workflows with <span class="${palette.accentText} text-glow">${product}</span>
       </h1>
       <p class="text-base sm:text-lg ${palette.subText} max-w-2xl mx-auto">
         The complete autonomous infrastructure platform designed for engineering teams shipping high-throughput distributed applications.
@@ -1434,6 +1434,19 @@ function compileStandaloneHtml(plan) {
     }
   }
 
+  const headingFontMap = {
+    [WEBSITE_TYPES.PORTFOLIO]: "'Outfit', 'Space Grotesk', sans-serif",
+    [WEBSITE_TYPES.RESTAURANT]: "'Playfair Display', Georgia, serif",
+    [WEBSITE_TYPES.ECOMMERCE]: "'Syne', 'Outfit', sans-serif",
+    [WEBSITE_TYPES.SAAS]: "'Space Grotesk', 'Outfit', sans-serif",
+    [WEBSITE_TYPES.AGENCY]: "'Syne', 'Space Grotesk', sans-serif",
+    [WEBSITE_TYPES.BLOG]: "'Playfair Display', 'Plus Jakarta Sans', serif",
+    [WEBSITE_TYPES.REAL_ESTATE]: "'Playfair Display', 'Outfit', serif",
+    [WEBSITE_TYPES.HOTEL]: "'Playfair Display', 'Outfit', serif",
+    [WEBSITE_TYPES.FITNESS]: "'Outfit', 'Space Grotesk', sans-serif"
+  };
+  const categoryHeadingFont = headingFontMap[type] || "'Outfit', 'Space Grotesk', sans-serif";
+
   return `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -1443,23 +1456,46 @@ function compileStandaloneHtml(plan) {
   <title>${brand} • ${type.toUpperCase()}</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Antigravity Fonts -->
+  <!-- Curated Premium Typography Stack: Outfit, Plus Jakarta Sans, Space Grotesk, Syne, Playfair Display, Geist Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Text:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400;1,600&family=Geist+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
-      font-family: 'Google Sans', 'Google Sans Text', 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
-      letter-spacing: -0.01em;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: -0.015em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .heading-font {
-      font-family: 'Google Sans', 'Geist', 'Inter', sans-serif;
-      letter-spacing: -0.02em;
+      font-family: ${categoryHeadingFont};
+      letter-spacing: -0.03em;
+    }
+    .editorial-font {
+      font-family: 'Playfair Display', Georgia, serif;
+      letter-spacing: -0.015em;
+    }
+    .syne-font {
+      font-family: 'Syne', sans-serif;
+      letter-spacing: -0.025em;
+    }
+    .space-font {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.03em;
     }
     .mono-font {
       font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+    .text-glow {
+      text-shadow: 0 0 28px ${palette.accentHex ? palette.accentHex + '66' : 'rgba(255,0,168,0.45)'};
+    }
+    .text-gradient-silver {
+      background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   </style>
 </head>

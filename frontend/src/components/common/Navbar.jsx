@@ -24,7 +24,7 @@ export default function Navbar({ onOpenLogin, onOpenRegister, onNavigateDashboar
             <div className="absolute inset-0 bg-gradient-to-tr from-[#FF00A8]/10 to-transparent pointer-events-none" />
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-xl font-extrabold tracking-tight font-display text-white">
+            <span className="text-xl font-black tracking-[-0.04em] font-heading text-white">
               BRAHMA
             </span>
             <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#181818] border border-[#262626] text-[#FF00A8] font-bold tracking-widest">

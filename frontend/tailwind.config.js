@@ -25,9 +25,12 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Google Sans"', '"Google Sans Text"', 'Geist', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        display: ['"Google Sans"', 'Geist', 'Inter', '"Space Grotesk"', 'sans-serif'],
-        mono: ['"Geist Mono"', '"JetBrains Mono"', '"Google Sans Code"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+        sans: ['"Plus Jakarta Sans"', '"Outfit"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        heading: ['"Space Grotesk"', '"Outfit"', 'sans-serif'],
+        syne: ['"Syne"', 'sans-serif'],
+        editorial: ['"Playfair Display"', 'Georgia', 'serif'],
+        mono: ['"Geist Mono"', '"JetBrains Mono"', 'ui-monospace', 'monospace']
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

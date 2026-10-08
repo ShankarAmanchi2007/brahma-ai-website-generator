@@ -36,12 +36,10 @@ export default function Hero({ onGeneratePrompt, onGetStarted }) {
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight font-display leading-[1.08] text-white">
-            Turn Any Idea into a{' '}
-            <span className="text-[#FF00A8]">
-              Live Website
-            </span>{' '}
-            in Seconds.
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold font-display-hero leading-[1.08] tracking-[-0.035em] text-white">
+            <span className="text-gradient-silver">Turn Any Idea into a </span>
+            <span className="text-gradient-magenta text-glow-magenta inline-block">Live Website</span>
+            <span className="text-gradient-silver"> in Seconds.</span>
           </h1>
 
           {/* Subheading */}

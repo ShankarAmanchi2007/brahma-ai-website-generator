@@ -6,16 +6,43 @@
   body {
     background-color: #000000;
     color: #FFFFFF;
-    font-family: 'Google Sans', 'Google Sans Text', 'Geist', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    letter-spacing: -0.012em;
+    font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    letter-spacing: -0.03em;
   }
 
   ::selection {
     background-color: #FF00A8;
     color: #000000;
   }
+}
+
+/* Premium Typography Utilities */
+.text-gradient-silver {
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 50%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-magenta {
+  background: linear-gradient(135deg, #FF00A8 0%, #FF5CCD 60%, #D9008F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-glow-magenta {
+  text-shadow: 0 0 25px rgba(255, 0, 168, 0.45);
+}
+
+.font-display-hero {
+  font-family: 'Outfit', 'Space Grotesk', sans-serif;
+  letter-spacing: -0.035em;
+  font-weight: 800;
 }
 
 /* Technical Minimal Scrollbars */
