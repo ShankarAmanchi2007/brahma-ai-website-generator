@@ -1,9 +1,9 @@
 /**
  * AI Service with Gemini API integration and Generative Fallback Engine
+ * Strictly enforces website type priority, internal planning, prompt adherence,
+ * and iterative modification persistence.
  */
-const { synthesizeWebsiteFromPrompt, modifyWebsiteWithInstruction } = require('./codeGenerator');
-
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+const { synthesizeWebsiteFromPrompt, modifyWebsiteWithInstruction, buildInternalPlan } = require('./codeGenerator');
 
 class AIService {
   constructor() {
@@ -16,7 +16,7 @@ class AIService {
   async generateWebsite(prompt) {
     if (this.apiKey && this.apiKey.trim().length > 10) {
       try {
-        console.log(`[AI Service] Calling Gemini API for prompt: "${prompt.slice(0, 50)}..."`);
+        console.log(`[AI Service] Calling Gemini API for prompt: "${prompt.slice(0, 60)}..."`);
         const geminiResult = await this.callGeminiForGeneration(prompt);
         if (geminiResult && geminiResult.previewHtml && geminiResult.files) {
           console.log('[AI Service] Successfully generated website via Gemini API');
@@ -27,7 +27,7 @@ class AIService {
       }
     }
 
-    console.log(`[AI Service] Synthesizing website using high-fidelity generative engine for prompt: "${prompt.slice(0, 50)}..."`);
+    console.log(`[AI Service] Synthesizing website using high-fidelity prompt-adherent engine for prompt: "${prompt.slice(0, 60)}..."`);
     return synthesizeWebsiteFromPrompt(prompt);
   }
 
@@ -37,7 +37,7 @@ class AIService {
   async modifyWebsite(existingProject, prompt, history = []) {
     if (this.apiKey && this.apiKey.trim().length > 10) {
       try {
-        console.log(`[AI Service] Calling Gemini API for iteration: "${prompt.slice(0, 50)}..."`);
+        console.log(`[AI Service] Calling Gemini API for iteration: "${prompt.slice(0, 60)}..."`);
         const geminiResult = await this.callGeminiForIteration(existingProject, prompt, history);
         if (geminiResult && geminiResult.previewHtml) {
           console.log('[AI Service] Successfully modified website via Gemini API');
@@ -48,25 +48,60 @@ class AIService {
       }
     }
 
-    console.log(`[AI Service] Modifying website using generative engine for instruction: "${prompt.slice(0, 50)}..."`);
+    console.log(`[AI Service] Modifying website using generative engine for instruction: "${prompt.slice(0, 60)}..."`);
     return modifyWebsiteWithInstruction(existingProject, prompt, history);
   }
 
   /**
-   * Helper to call Gemini REST endpoint
+   * Helper to call Gemini REST endpoint with strict prompt-following directives
    */
   async callGeminiForGeneration(userPrompt) {
+    const internalPlan = buildInternalPlan(userPrompt);
+
     const systemPrompt = `You are BRAHMA, an elite full-stack web developer and UI/UX art director.
-When a user asks you to create a website, generate a complete, responsive, modern, production-grade website adhering to the BRAHMA Design System:
-- Palette: Dominant deepest blacks (bg-[#050505], bg-[#070707]), carbon surfaces (bg-[#0c0c0c], bg-[#121212]), precision thin borders (border-[#1f1f1f], border-[#262626]), crisp white typography, neutral muted text (text-neutral-400), and focused hot-magenta accents (#FF00A8, hover: #D9008F).
-- Aesthetics: Human-designed editorial balance, high contrast, clean typography, avoid generic AI tropes (no repetitive purple gradients, no floating blobs).
-- Functionality: Complete HTML with <base target="_self">, responsive navigation, mobile drawer toggle, hero, requested domain-specific sections, interactive contact/reservation form, and footer.
-You MUST output ONLY a valid JSON object conforming to this schema:
+
+CRITICAL INSTRUCTIONS - ACCURATELY FOLLOW USER'S PROMPT:
+1. IDENTIFY WEBSITE TYPE FIRST:
+   Determine exact website category (portfolio, restaurant, e-commerce, saas, agency, blog, real estate, hotel, fitness, education, healthcare, startup).
+   THE USER'S REQUESTED WEBSITE TYPE IS THE HIGHEST-PRIORITY REQUIREMENT.
+   - If user asks for a portfolio, the output MUST be a personal/developer portfolio. NEVER generate a restaurant, e-commerce, or SaaS!
+   - If user asks for a restaurant, it MUST be a restaurant with menu, dishes, and reservations.
+   - If user asks for e-commerce, it MUST be an online store with product catalog, cart, and offers.
+   - If user asks for SaaS, it MUST be a software product with features, demo, and pricing.
+
+2. PRESERVE USER REQUIREMENTS:
+   - Extract Person/Brand Name (e.g. "Rahul", "L'Atelier Noir")
+   - Extract Profession/Role (e.g. "React Developer", "UI/UX Designer")
+   - Extract Colors (e.g. "black and magenta", "blue and white")
+   - Extract Style & Aesthetics
+
+3. USE WEBSITE-TYPE-SPECIFIC STRUCTURE:
+   - PORTFOLIO: Hero (Name, Role, CTA) -> About Me -> Skills/Tech Stack -> Featured Projects -> Work Experience -> Education/Credentials -> Resume Download -> Contact Form -> Footer
+   - RESTAURANT: Hero -> Menu -> Featured Dishes -> About -> Gallery -> Reviews -> Reservation Form -> Location & Hours -> Footer
+   - E-COMMERCE: Announcement Bar -> Hero -> Categories -> Featured Products -> Offers -> Reviews -> Newsletter -> Footer
+   - SAAS: Hero -> Product Demo -> Core Features -> How It Works -> Integrations -> Pricing Tiers -> Reviews -> FAQ -> CTA -> Footer
+
+4. PREVIEW ISOLATION:
+   - Always include <base target="_self"> in the <head>.
+   - Navigation links must use in-page anchors (e.g. href="#about", href="#projects", href="#contact").
+   - NEVER use target="_blank" on in-page navigation or root links.
+
+You MUST output ONLY a valid JSON object matching this schema:
 {
-  "projectName": "Catchy Brand or Person Name",
+  "plan": {
+    "websiteType": "${internalPlan.websiteType}",
+    "purpose": "...",
+    "industry": "...",
+    "targetAudience": "...",
+    "style": "...",
+    "colors": "...",
+    "requiredSections": [],
+    "specialRequirements": []
+  },
+  "projectName": "${internalPlan.personOrBrandName}",
   "framework": "react",
-  "explanation": "Brief 1-2 sentence overview of what was generated",
-  "previewHtml": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><base target='_self'><script src='https://cdn.tailwindcss.com'></script><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'><title>Site</title></head><body class='bg-[#050505] text-white'>...complete rich HTML with responsive nav, hero, requested sections, contact form, footer, and interactive script...</body></html>",
+  "explanation": "Clear explanation confirming the website type, developer/brand name, role, colors, and sections generated.",
+  "previewHtml": "<!DOCTYPE html><html lang='en' class='scroll-smooth'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><base target='_self'><script src='https://cdn.tailwindcss.com'></script><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'><title>Site</title></head><body class='bg-[#050505] text-white'>...complete standalone HTML with category-specific sections, interactive mobile menu, contact form, and footer...</body></html>",
   "files": [
     { "fileName": "package.json", "filePath": "package.json", "content": "..." },
     { "fileName": "index.html", "filePath": "index.html", "content": "..." },
@@ -85,7 +120,7 @@ You MUST output ONLY a valid JSON object conforming to this schema:
         }
       ],
       generationConfig: {
-        temperature: 0.7,
+        temperature: 0.6,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json'
       }
@@ -118,17 +153,24 @@ You MUST output ONLY a valid JSON object conforming to this schema:
   async callGeminiForIteration(existingProject, instruction, history = []) {
     const existingHtml = existingProject.generatedCode || '';
     const systemPrompt = `You are BRAHMA, an elite full-stack web developer and UI/UX art director.
-The user has an existing website and wants to make modifications.
-Preserve the existing website's structure, layout, and sections UNLESS the user explicitly asked to change or remove them.
-Adhere to the BRAHMA Design System:
-- Deep black background (bg-[#050505]), carbon surfaces (bg-[#0c0c0c]), thin precision borders (border-[#1f1f1f]), white typography, and hot-magenta accents (#FF00A8).
-Make the requested modifications accurately (e.g. change color theme, add section, adjust hero size, update text).
-Output ONLY a valid JSON object conforming to:
+
+CRITICAL INSTRUCTIONS FOR ITERATIVE EDITING:
+1. PRESERVE THE EXISTING WEBSITE CATEGORY AND PURPOSE:
+   If the existing website is a Portfolio, KEEP it as a portfolio.
+   If the user asks to "change accent color to blue", change the color palette but keep all sections and content intact.
+   If the user asks to "add a projects section", insert or expand the projects section while keeping everything else.
+   If the user asks to "make the hero larger", adjust hero padding and typography without removing other sections.
+   NEVER regenerate an unrelated website category!
+
+2. PRESERVE IN-PREVIEW ISOLATION:
+   Keep <base target="_self"> and in-page anchor links intact.
+
+Output ONLY a valid JSON object matching:
 {
   "projectName": "${existingProject.projectName}",
   "framework": "react",
-  "explanation": "Friendly explanation of what was changed and updated",
-  "previewHtml": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><base target='_self'><script src='https://cdn.tailwindcss.com'></script><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'><title>Site</title></head><body class='bg-[#050505] text-white'>...updated complete standalone HTML...</body></html>",
+  "explanation": "Friendly explanation of what was modified while preserving the existing structure.",
+  "previewHtml": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><base target='_self'><script src='https://cdn.tailwindcss.com'></script><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'><title>Site</title></head><body class='bg-[#050505] text-white'>...updated complete standalone HTML...</body></html>",
   "files": [
     { "fileName": "index.html", "filePath": "index.html", "content": "..." },
     { "fileName": "App.jsx", "filePath": "src/App.jsx", "content": "..." },
@@ -143,13 +185,13 @@ Output ONLY a valid JSON object conforming to:
           role: 'user',
           parts: [
             {
-              text: `${systemPrompt}\n\nExisting HTML snippet (first 3000 chars):\n${existingHtml.slice(0, 3000)}\n\nUser Modification Request: ${instruction}`
+              text: `${systemPrompt}\n\nExisting Project HTML snippet (first 3500 chars):\n${existingHtml.slice(0, 3500)}\n\nUser Modification Instruction: ${instruction}`
             }
           ]
         }
       ],
       generationConfig: {
-        temperature: 0.7,
+        temperature: 0.6,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json'
       }
