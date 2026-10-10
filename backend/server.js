@@ -10,9 +10,6 @@ const deployService = require('./services/deployService');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database
-connectDB();
-
 // Global Middlewares
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -63,10 +60,15 @@ app.get('/live/:deploymentId', (req, res) => {
 app.use(errorHandler);
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`===============================================`);
-  console.log(`⚡ BRAHMA Autonomous AI Web Engine Backend is LIVE!`);
-  console.log(`📡 URL: http://localhost:${PORT}`);
-  console.log(`🏥 Health: http://localhost:${PORT}/api/health`);
-  console.log(`===============================================`);
-});
+async function startServer() {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`===============================================`);
+    console.log(`⚡ BRAHMA Autonomous AI Web Engine Backend is LIVE!`);
+    console.log(`📡 URL: http://localhost:${PORT}`);
+    console.log(`🏥 Health: http://localhost:${PORT}/api/health`);
+    console.log(`===============================================`);
+  });
+}
+
+startServer();
