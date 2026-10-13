@@ -61,6 +61,14 @@ const initTables = async (client) => {
   `);
 };
 
+const sanitizeDbError = (err) => {
+  if (!err) return '';
+  const str = typeof err === 'string' ? err : (err.message || err.toString());
+  return str
+    .replace(/postgres(?:ql)?:\/\/[^:]+:[^@]+@/gi, 'postgresql://***:***@')
+    .replace(/password=[^\s;]+/gi, 'password=***');
+};
+
 const connectDB = async () => {
   const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL;
 
@@ -75,6 +83,10 @@ const connectDB = async () => {
         max: 20
       });
 
+      pool.on('error', (err) => {
+        console.error('! NeonDB Pool Error:', sanitizeDbError(err));
+      });
+
       const client = await pool.connect();
       await initTables(client);
       client.release();
@@ -83,7 +95,7 @@ const connectDB = async () => {
       console.log('✓ NeonDB (PostgreSQL) connected and verified successfully!');
       return;
     } catch (err) {
-      console.warn(`! NeonDB connection note: ${err.message}`);
+      console.warn(`! NeonDB connection note: ${sanitizeDbError(err)}`);
       console.log('✓ Activating embedded PostgreSQL-compatible relational store.');
       isConnectedToPostgres = false;
     }
