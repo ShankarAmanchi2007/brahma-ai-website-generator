@@ -1,9 +1,29 @@
 /**
  * Frontend API Service
  */
-const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
-  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
-  : '/api';
+function getApiBase() {
+  // 1. Runtime override via window or localStorage (useful for debugging and custom domains)
+  if (typeof window !== 'undefined') {
+    const customUrl = window.__BRAHMA_API_URL__ || localStorage.getItem('brahma_api_url');
+    if (customUrl && typeof customUrl === 'string' && customUrl.trim()) {
+      const trimmed = customUrl.trim().replace(/\/$/, '');
+      return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+    }
+  }
+
+  // 2. Vite environment variable (baked in at build time)
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+    const rawUrl = String(import.meta.env.VITE_API_URL).trim().replace(/\/$/, '');
+    if (rawUrl) {
+      return rawUrl.endsWith('/api') ? rawUrl : `${rawUrl}/api`;
+    }
+  }
+
+  // 3. Fallback to local /api proxy
+  return '/api';
+}
+
+const API_BASE = getApiBase();
 
 function getAuthHeaders() {
   const token = localStorage.getItem('brahma_token') || localStorage.getItem('webcraft_token');
@@ -25,7 +45,21 @@ async function handleResponse(response) {
     localStorage.removeItem('webcraft_user');
   }
 
-  const data = await response.json().catch(() => ({}));
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('text/html')) {
+    // When API returns HTML (e.g. index.html from static SPA rewrite instead of hitting backend)
+    throw new Error('API server returned HTML instead of JSON. Ensure VITE_API_URL is configured to point to your deployed backend (e.g. https://brahma-backend.onrender.com).');
+  }
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (err) {
+    if (!response.ok) {
+      throw new Error(`Server returned error status ${response.status}`);
+    }
+    throw new Error('Invalid JSON response from server');
+  }
 
   if (!response.ok) {
     const errorMsg = data.message || `Request failed with status ${response.status}`;

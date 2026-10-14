@@ -10,8 +10,19 @@ const deployService = require('./services/deployService');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Global Middlewares
-app.use(cors());
+// Trust reverse proxy (Render, Vercel, Cloudflare, etc.)
+app.set('trust proxy', 1);
+
+// Global Middlewares & Comprehensive CORS Configuration
+const corsOptions = {
+  origin: true, // Dynamically allow calling origin
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -55,6 +66,16 @@ app.get('/live/:deploymentId', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
 });
+
+// Serve frontend static build if present (Unified full-stack support)
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+if (require('fs').existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/live')) return next();
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
 
 // Central Error Handler
 app.use(errorHandler);
